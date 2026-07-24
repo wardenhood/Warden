@@ -1,0 +1,13 @@
+{
+  "name": "warden-cli",
+  "version": "0.2.0",
+  "type": "module",
+  "bin": {
+    "warden": "warden.mjs"
+  },
+  "dependencies": {
+    "better-sqlite3": "^11.3.0",
+    "commander": "^12.1.0",
+    "ethers": "^6.13.2"
+  }
+}

@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Warden · Demo</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--g:#bcfc07;--bk:#000;--w:#fff;--g1:#f8f9fa;--g2:#e5e5e5;--g4:#999;--g6:#666;--code:#0d1117;--ok:#3edc64}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--w);color:var(--bk);font-family:Inter;overflow-x:hidden}
+.wrap{max-width:1100px;margin:0 auto;padding:60px 24px}
+.hero{text-align:center;margin-bottom:40px;animation:fadeUp .6s .1s ease-out both}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.hero .badge{display:inline-block;background:var(--g);color:var(--bk);font:600 11px JetBrains Mono;padding:6px 16px;border-radius:20px;margin-bottom:20px;letter-spacing:.06em;text-transform:uppercase;animation:fadeUp .5s .15s ease-out both}
+.hero h1{font:800 clamp(38px,6vw,68px)/1.05 Inter;letter-spacing:-.04em;margin-bottom:12px;animation:fadeUp .5s .25s ease-out both}
+.hero h1 span{background:var(--g);padding:0 .08em;display:inline-block}
+
+/* LIVE PIPELINE DISPLAY */
+.live-panel{background:var(--code);border:2px solid rgba(255,255,255,.06);border-radius:20px;overflow:hidden;margin:32px 0;position:relative;animation:panelIn .6s .35s ease-out both}
+@keyframes panelIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.live-panel .glow{position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:radial-gradient(circle at 50% 0%,rgba(188,252,7,.06) 0%,transparent 60%);pointer-events:none;animation:glowPulse 4s ease-in-out infinite}
+@keyframes glowPulse{0%,100%{opacity:.4}50%{opacity:1}}
+.panel-top{display:flex;align-items:center;gap:20px;padding:18px 24px;border-bottom:1px solid rgba(255,255,255,.06)}
+.panel-top .logo{font:700 18px Inter;color:var(--w);letter-spacing:-.02em;display:flex;align-items:center;gap:8px}
+.panel-top .logo svg{width:20px;height:20px}
+.panel-top .status{display:flex;align-items:center;gap:6px;font:500 11px JetBrains Mono;color:var(--ok)}
+.panel-top .status .d{width:8px;height:8px;border-radius:50%;background:var(--ok);animation:pulse 1.5s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.panel-top .info{flex:1;text-align:right;font:400 11px JetBrains Mono;color:var(--g4)}
+.panel-body{padding:28px 32px;position:relative;z-index:1}
+
+/* step timeline */
+.timeline{display:flex;gap:0;margin-bottom:28px}
+.tl-step{flex:1;text-align:center;position:relative;padding:20px 12px 16px;border-radius:12px;transition:all .4s}
+.tl-step .dot{width:40px;height:40px;border-radius:50%;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-size:18px;background:rgba(255,255,255,.04);border:2px solid rgba(255,255,255,.08);transition:all .4s}
+.tl-step .label{font:600 11px JetBrains Mono;color:var(--g4);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px;transition:all .4s}
+.tl-step .sub{font:400 12px Inter;color:rgba(255,255,255,.25);transition:all .4s}
+.tl-step::after{content:'';position:absolute;top:40px;right:-50%;width:100%;height:2px;background:rgba(255,255,255,.06);z-index:-1}
+.tl-step:last-child::after{display:none}
+.tl-step.active{background:rgba(188,252,7,.04);border-radius:12px}
+.tl-step.active .dot{background:var(--g);border-color:var(--g);color:var(--bk);box-shadow:0 0 24px rgba(188,252,7,.3)}
+.tl-step.active .label{color:var(--g)}
+.tl-step.active .sub{color:rgba(255,255,255,.6)}
+.tl-step.done .dot{background:var(--ok);border-color:var(--ok);color:var(--code)}
+.tl-step.done .label{color:var(--ok)}
+
+/* event cards */
+.events{margin-bottom:20px;display:flex;flex-direction:column;gap:8px}
+.ev{display:flex;align-items:center;gap:14px;padding:12px 16px;border-radius:10px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.04);font:400 12px JetBrains Mono;opacity:0;transform:translateX(-12px);animation:slideIn .35s forwards}
+@keyframes slideIn{to{opacity:1;transform:translateX(0)}}
+.ev .ev-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.ev.transfer .ev-icon{background:rgba(94,234,212,.12);color:var(--g)}
+.ev.swap .ev-icon{background:rgba(168,130,255,.12);color:#a885ff}
+.ev.liquidation .ev-icon{background:rgba(255,123,114,.12);color:#ff7b72}
+.ev .ev-main{flex:1;min-width:0}
+.ev .ev-type{color:var(--g);font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.04em}
+.ev .ev-desc{color:rgba(255,255,255,.7);font-size:12px;margin-top:2px}
+.ev .ev-meta{text-align:right;flex-shrink:0}
+.ev .ev-status{font-size:12px;color:var(--ok)}
+.ev .ev-latency{font-size:10px;color:var(--g4);margin-top:2px}
+
+/* bottom bar */
+.bottom-bar{display:flex;align-items:center;gap:12px;padding:14px 24px;border-top:1px solid rgba(255,255,255,.06);background:rgba(0,0,0,.3)}
+.bottom-bar .metric{display:flex;align-items:center;gap:8px}
+.bottom-bar .metric .m-val{font:600 13px Inter;color:var(--w)}
+.bottom-bar .metric .m-lbl{font:400 10px JetBrains Mono;color:var(--g4);text-transform:uppercase;letter-spacing:.04em}
+.bottom-bar .divider{width:1px;height:20px;background:rgba(255,255,255,.08)}
+.bottom-bar .spacer{flex:1}
+.bottom-bar .loop-hint{font:400 11px JetBrains Mono;color:var(--g4)}
+
+/* stats */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin:32px 0}
+.stat{background:var(--w);border:1px solid var(--g2);border-radius:14px;padding:22px 20px;text-align:center}
+.stat .val{font:700 30px Inter;color:var(--bk);letter-spacing:-.02em}
+.stat .lbl{font:600 10px JetBrains Mono;color:var(--g4);text-transform:uppercase;letter-spacing:.08em;margin-top:6px}
+
+.btns{display:flex;gap:12px;justify-content:center;margin:30px 0}
+.btn{font:600 14px Inter;padding:14px 28px;border-radius:10px;cursor:pointer;text-decoration:none;border:2px solid var(--bk);transition:all .15s;display:inline-flex;align-items:center;gap:8px}
+.btn-fill{background:var(--bk);color:var(--w)}.btn-fill:hover{background:var(--g6)}
+.btn-out{background:var(--w);color:var(--bk)}.btn-out:hover{background:var(--bk);color:var(--w)}
+.hint{font:400 12px Inter;color:var(--g4);align-self:center}
+
+@media(max-width:768px){.timeline{flex-wrap:wrap}.tl-step{flex:0 0 50%}.tl-step::after{display:none}.stats{grid-template-columns:repeat(2,1fr)}.panel-body{padding:20px 16px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="hero">
+    <div class="badge">Robinhood Chain · Event Infrastructure</div>
+    <h1>Watch the chain.<br><span>React before the next block.</span></h1>
+  </div>
+
+  <!-- LIVE PIPELINE -->
+  <div class="live-panel">
+    <div class="glow"></div>
+    <div class="panel-top">
+      <div class="logo" style="display:flex;align-items:center;gap:8px">
+        <img src="./logo.jpg" width="20" height="20" alt="" style="border:1px solid var(--g)">
+        warden
+      </div>
+      <div class="status"><span class="d"></span> LIVE</div>
+      <div class="info" id="block-info">RHC · BLOCK 8,581,242</div>
+    </div>
+    <div class="panel-body">
+      <!-- Step Timeline -->
+      <div class="timeline" id="timeline">
+        <div class="tl-step active" id="ts0"><div class="dot">1</div><div class="label">Describe</div><div class="sub">AI → JSON</div></div>
+        <div class="tl-step" id="ts1"><div class="dot">2</div><div class="label">Match</div><div class="sub">eth_subscribe</div></div>
+        <div class="tl-step" id="ts2"><div class="dot">3</div><div class="label">Deliver</div><div class="sub">HMAC webhook</div></div>
+        <div class="tl-step" id="ts3"><div class="dot">4</div><div class="label">Record</div><div class="sub">on-chain tx</div></div>
+      </div>
+      <!-- Event Feed -->
+      <div class="events" id="events"></div>
+    </div>
+    <!-- Bottom Bar -->
+    <div class="bottom-bar">
+      <div class="metric"><div class="m-val" id="bm1">3</div><div class="m-lbl">Subs</div></div>
+      <div class="divider"></div>
+      <div class="metric"><div class="m-val" id="bm2">14</div><div class="m-lbl">Delivered</div></div>
+      <div class="divider"></div>
+      <div class="metric"><div class="m-val" id="bm3">100%</div><div class="m-lbl">Success</div></div>
+      <div class="divider"></div>
+      <div class="metric"><div class="m-val" id="bm4">91ms</div><div class="m-lbl">p50</div></div>
+      <div class="spacer"></div>
+      <div class="loop-hint">auto-loop · press R to replay</div>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats">
+    <div class="stat"><div class="val" id="ss">3</div><div class="lbl">Active Subscriptions</div></div>
+    <div class="stat"><div class="val" id="st">14</div><div class="lbl">Total Deliveries</div></div>
+    <div class="stat"><div class="val" id="sr">100%</div><div class="lbl">Success Rate</div></div>
+    <div class="stat"><div class="val" id="sl">91ms</div><div class="lbl">p50 Latency</div></div>
+  </div>
+
+  <div class="btns">
+    <button class="btn btn-fill" onclick="replay()">▶ Replay Demo</button>
+    <a href="./app" class="btn btn-out">Open App →</a>
+    <span class="hint">press R to replay</span>
+  </div>
+</div>
+
+<script>
+const timelineSteps=document.querySelectorAll('.tl-step');
+const eventsEl=document.getElementById('events');
+const blockInfo=document.getElementById('block-info');
+const [bm1,bm2,bm3,bm4]=[document.getElementById('bm1'),document.getElementById('bm2'),document.getElementById('bm3'),document.getElementById('bm4')];
+const [ss,st,sr,sl]=[document.getElementById('ss'),document.getElementById('st'),document.getElementById('sr'),document.getElementById('sl')];
+let total=14;
+
+function setStep(n){
+  timelineSteps.forEach((s,i)=>{
+    s.classList.remove('active','done');
+    if(i<n)s.classList.add('done');
+    else if(i===n)s.classList.add('active');
+  });
+}
+function addEv(type,desc,status,ms,tx){
+  const el=document.createElement('div');
+  el.className=`ev ${type}`;
+  el.innerHTML=`<div class="ev-icon">${type==='transfer'?'↓':type==='swap'?'↻':'⚠'}</div><div class="ev-main"><div class="ev-type">${type.toUpperCase()}</div><div class="ev-desc">${desc}</div></div><div class="ev-meta"><div class="ev-status">${status}</div><div class="ev-latency">${ms}ms · ${tx}</div></div>`;
+  eventsEl.appendChild(el);
+  if(eventsEl.children.length>6)eventsEl.firstElementChild.remove();
+}
+function updBlock(n){const target='RHC · BLOCK 8,581,'+(240+n*7);blockInfo.textContent=target}
+function animateCount(el,target,duration=400){
+  const start=parseInt(el.textContent)||0;const diff=target-start;if(diff===0)return;
+  const fps=30;const steps=duration/1000*fps;let i=0;
+  const t=setInterval(()=>{i++;el.textContent=Math.round(start+diff*(i/steps));if(i>=steps){el.textContent=target;clearInterval(t)}},1000/fps);
+}
+function bumpTotal(){
+  total++;const t=String(total);
+  animateCount(bm2,total,300);animateCount(document.getElementById('st'),total,300);
+  const lats=['89','82','91','93','78','85','97'];const lt=lats[(total-15)%7];
+  bm4.textContent=lt+'ms';sl.textContent=lt+'ms';
+}
+
+async function sleep(ms){return new Promise(r=>setTimeout(r,ms))}
+async function run(){
+  eventsEl.innerHTML='';total=14;bm2.textContent='14';st.textContent='14';bm4.textContent='91ms';sl.textContent='91ms';updBlock(0);
+  setStep(0);await sleep(800);
+  setStep(1);await sleep(1000);
+  setStep(2);updBlock(1);addEv('transfer','200,000 TSLA · 0xWhale → 0xExchange','200',89,'0xa4b2…c91d');bumpTotal();await sleep(1200);
+  setStep(3);await sleep(800);
+  setStep(-1);await sleep(1000);
+
+  // Event 2
+  setStep(1);await sleep(600);
+  setStep(2);updBlock(2);addEv('swap','75,000 NVDA · 0xPool → 0xTrader','200',76,'0x7c3d…6f2a');bumpTotal();await sleep(1000);
+  setStep(3);await sleep(600);
+  setStep(-1);await sleep(800);
+
+  // Event 3
+  setStep(1);await sleep(500);
+  setStep(2);updBlock(3);addEv('transfer','150,000 AAPL · 0xFund → 0xDEX','200',94,'0xb793…2e4f');bumpTotal();await sleep(900);
+  setStep(3);await sleep(500);
+  setStep(-1);await sleep(700);
+
+  // Event 4
+  setStep(1);await sleep(400);
+  setStep(2);updBlock(4);addEv('liquidation','500,000 ETH · 0xPool → 0xLiquidator','200',112,'0xd815…a37e');bumpTotal();await sleep(800);
+  setStep(3);await sleep(500);
+
+  // Event 5
+  setStep(1);await sleep(500);
+  setStep(2);updBlock(5);addEv('transfer','80,000 MSTR · 0xFund → 0xWhale','200',78,'0xe921…b4c1');bumpTotal();await sleep(700);
+  setStep(3);await sleep(400);
+
+  await sleep(3000);
+  run();
+}
+
+function replay(){run().catch(()=>{})}
+run();
+document.addEventListener('keydown',e=>{if(e.key==='r'||e.key==='R')replay()});
+</script>
+</body>
+</html>

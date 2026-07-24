@@ -1,0 +1,6 @@
+{
+  "and": [
+    { "field": "eventName", "op": "eq", "value": "Transfer" },
+    { "field": "from", "op": "in", "value": ["0xCOMPLIANCE_AUTHORITY_1", "0xCOMPLIANCE_AUTHORITY_2"] }
+  ]
+}

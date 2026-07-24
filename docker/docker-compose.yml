@@ -1,0 +1,69 @@
+version: "3.9"
+
+services:
+  # ── Matcher: predicate engine + webhook dispatcher ─────────────────────
+  matcher:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+      target: matcher
+    restart: unless-stopped
+    environment:
+      RHC_WSS_URL: ${RHC_WSS_URL:-wss://rhc-mainnet.example-rpc.com}
+      RHC_HTTP_URL: ${RHC_HTTP_URL:-https://rhc-mainnet.example-rpc.com}
+      ESCROW_ADDRESS: ${ESCROW_ADDRESS:-}
+      MATCHER_PRIVATE_KEY: ${MATCHER_PRIVATE_KEY:-}
+      WATCH_CONTRACTS: ${WATCH_CONTRACTS:-TSLA:Transfer}
+      DB_PATH: /data/warden.db
+      METRICS_PORT: "9090"
+    volumes:
+      - warden_data:/data
+    # port 9090 intentionally not exposed — Prometheus scrapes internally
+
+  # ── Workspace: visual builder + live feed ──────────────────────────────
+  workspace:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+      target: workspace
+    restart: unless-stopped
+    environment:
+      DB_PATH: /data/warden.db
+    volumes:
+      - warden_data:/data
+    ports:
+      - "${WORKSPACE_PORT:-4000}:4000"
+
+  # ── Prometheus ─────────────────────────────────────────────────────────
+  prometheus:
+    image: prom/prometheus:latest
+    restart: unless-stopped
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+      - --web.enable-lifecycle
+    ports:
+      - "9091:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+
+  # ── Grafana ────────────────────────────────────────────────────────────
+  grafana:
+    image: grafana/grafana:latest
+    restart: unless-stopped
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_USER:-admin}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD:-admin}
+      GF_INSTALL_PLUGINS: ""
+    ports:
+      - "${GRAFANA_PORT:-3000}:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana-dashboard.json:/etc/grafana/provisioning/dashboards/warden.json:ro
+      - ./grafana-datasource.yml:/etc/grafana/provisioning/datasources/warden.yml:ro
+
+volumes:
+  warden_data:
+  prometheus_data:
+  grafana_data:

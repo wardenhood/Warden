@@ -1,0 +1,26 @@
+{
+  "name": "warden",
+  "version": "0.2.0",
+  "type": "module",
+  "description": "Real-time event push for Robinhood Chain — predicate engine, webhook delivery, on-chain escrow.",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc -p .",
+    "start": "node dist/index.js",
+    "dev": "tsx src/index.ts"
+  },
+  "dependencies": {
+    "better-sqlite3": "^11.3.0",
+    "dotenv": "^16.4.5",
+    "ethers": "^6.13.2"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.11",
+    "@types/jest": "^30.0.0",
+    "@types/node": "^22.5.0",
+    "jest": "^30.4.2",
+    "ts-jest": "^29.4.11",
+    "tsx": "^4.19.0",
+    "typescript": "^5.5.4"
+  }
+}

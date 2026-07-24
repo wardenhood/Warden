@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Warden · Status</title>
+<link rel="icon" href="./favicon.png">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--g:#bcfc07;--bk:#000;--w:#fff;--g1:#f5f5f5;--g2:#e5e5e5;--g4:#999;--g6:#666;--code:#0d1117;--ok:#3edc64;--bad:#f85149;--y:#fbbf24}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',system-ui,sans-serif;color:var(--bk);background:var(--w);-webkit-font-smoothing:antialiased}
+.mx{max-width:1000px;margin:0 auto;padding:0 24px}
+
+nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.94);backdrop-filter:blur(12px);border-bottom:1px solid rgba(0,0,0,.08);padding:12px 0}
+nav .mx{display:flex;align-items:center;justify-content:space-between}
+nav .logo{font:700 17px 'Inter';color:var(--bk);text-decoration:none;letter-spacing:-.02em}
+nav .logo svg{width:18px;height:18px;vertical-align:middle;margin-right:6px}
+nav .links{display:flex;gap:18px;align-items:center}
+nav .links a{font:500 14px 'Inter';color:var(--g6);text-decoration:none}
+nav .links a:hover{color:var(--bk)}
+
+header{padding:40px 0 20px}
+header h1{font:700 28px/1.15 'Inter';letter-spacing:-.03em}
+header .sub{font:400 14px 'Inter';color:var(--g6);margin-top:4px}
+
+.checks{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin:24px 0}
+.check{border:1px solid var(--g2);border-radius:14px;padding:22px;display:flex;align-items:flex-start;gap:16px}
+.check .icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.check.up .icon{background:#e8f5e9;color:var(--ok)}
+.check.down .icon{background:#fce4ec;color:var(--bad)}
+.check.warn .icon{background:#fff8e1;color:var(--y)}
+.check .info{flex:1}
+.check .info h3{font:600 15px 'Inter';margin-bottom:2px}
+.check .info .desc{font:400 12px 'JetBrains Mono';color:var(--g6)}
+.check .info .data{font:400 11px 'JetBrains Mono';color:var(--g4);margin-top:4px}
+
+.metrics-card{border:2px solid var(--bk);border-radius:16px;padding:28px;margin:24px 0}
+.metrics-card h3{font:600 11px 'JetBrains Mono';color:var(--g4);text-transform:uppercase;letter-spacing:.08em;margin-bottom:20px}
+.metrics-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:20px}
+.metric{text-align:center}
+.metric .val{font:700 24px 'Inter';color:var(--bk)}
+.metric .lbl{font:600 9px 'JetBrains Mono';color:var(--g4);text-transform:uppercase;letter-spacing:.06em;margin-top:4px}
+.metric .sub{font:400 10px 'Inter';color:var(--g6);margin-top:2px}
+
+.events{max-height:300px;overflow-y:auto}
+.events table{width:100%;border-collapse:collapse;font-size:12px}
+.events th{text-align:left;padding:8px 10px;border-bottom:2px solid var(--g2);font:600 9px 'JetBrains Mono';color:var(--g4);text-transform:uppercase;letter-spacing:.04em;position:sticky;top:0;background:var(--w)}
+.events td{padding:8px 10px;border-bottom:1px solid var(--g2);font:400 11px 'JetBrains Mono'}
+.events td.ok{color:var(--ok);font-weight:600}
+.events td.bad{color:var(--bad);font-weight:600}
+
+.poll{display:flex;align-items:center;gap:8px;margin-top:16px;font:400 11px 'JetBrains Mono';color:var(--g4)}
+.poll .dot{width:8px;height:8px;border-radius:50%;background:var(--ok);animation:pulse 1.5s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+
+.uptime-bar{margin:16px 0;display:flex;gap:2px}
+.uptime-bar .bar{flex:1;height:20px;border-radius:3px;background:var(--g2)}
+.uptime-bar .bar.ok{background:var(--ok)}
+.uptime-bar .bar.bad{background:var(--bad)}
+
+.refresh{text-align:center;margin:32px 0}
+.refresh button{font:600 14px 'Inter';padding:12px 24px;border-radius:10px;cursor:pointer;border:2px solid var(--bk);background:var(--w);transition:all .12s}
+.refresh button:hover{background:var(--bk);color:var(--w)}
+
+footer{margin:40px 0;text-align:center;font:400 11px 'Inter';color:var(--g4)}
+footer a{color:var(--bk);text-decoration:underline;text-underline-offset:3px}
+
+@media(max-width:768px){.checks,.metrics-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="mx">
+    <a href="./" class="logo" style="display:flex;align-items:center;gap:6px">
+      <img src="./logo.jpg" width="18" height="18" alt="" style="border:1px solid #000">
+      warden
+    </a>
+    <div class="links">
+      <a href="./">← Landing</a>
+      <a href="./app">App</a>
+      <a href="./dashboard">Dashboard</a>
+      <a href="./status">Status</a>
+    </div>
+  </div>
+</nav>
+
+<div class="mx">
+  <header>
+    <h1>System Status</h1>
+    <p class="sub" id="status-time">Checking…</p>
+  </header>
+
+  <!-- Health Checks -->
+  <div class="checks" id="checks"></div>
+
+  <!-- Metrics -->
+  <div class="metrics-card">
+    <h3>Matcher Metrics</h3>
+    <div class="metrics-row">
+      <div class="metric"><div class="val" id="m-uptime">—</div><div class="lbl">Uptime</div><div class="sub">since last restart</div></div>
+      <div class="metric"><div class="val" id="m-subs">—</div><div class="lbl">Active Subs</div></div>
+      <div class="metric"><div class="val" id="m-delivered">—</div><div class="lbl">Delivered</div></div>
+      <div class="metric"><div class="val" id="m-success">—</div><div class="lbl">Success Rate</div></div>
+    </div>
+    <div class="events" id="events"></div>
+    <div class="poll"><span class="dot"></span> Polling every 5s</div>
+  </div>
+
+  <div class="refresh"><button onclick="refresh()">↻ Refresh Now</button></div>
+  <footer>Powered by <a href="./docs.html">Warden</a> · Robinhood Chain</footer>
+</div>
+
+<script>
+async function checkHealth(path, name, desc, dataFn) {
+  try {
+    const r = await fetch(path, { cache: 'no-store' });
+    const status = r.ok ? 'up' : r.status >= 500 ? 'down' : 'warn';
+    const data = r.ok ? await dataFn(r) : r.status + ' ' + r.statusText;
+    return { name, desc, status, data };
+  } catch { return { name, desc, status: 'down', data: 'Connection refused' }; }
+}
+
+async function refresh() {
+  const t0 = Date.now();
+  
+  const checks = await Promise.all([
+    checkHealth('/api/stats', 'Matcher API', 'Deliveries + subscriptions endpoint', async r => {
+      const j = await r.json();
+      return `${j.totalDeliveries ?? 0} deliveries · ${j.activeSubs ?? 0} active subs`;
+    }),
+    checkHealth('/api/health', 'Health Endpoint', 'Matcher process alive check', async r => r.text()),
+    checkHealth('/api/deliveries?limit=1', 'Delivery Pipeline', 'Recent delivery query', async r => {
+      const d = await r.json();
+      return d.length ? `Latest: ${new Date(d[0].created_at).toLocaleTimeString()}` : 'No deliveries yet';
+    }),
+    checkHealth('/api/snapshot.json', 'Snapshot Feed', 'Matcher state snapshot', async r => {
+      const j = await r.json();
+      return `${j.subscriptions?.length ?? 0} subscriptions loaded`;
+    }),
+  ]);
+
+  const iconMap = { up: '<div class="icon">✓</div>', down: '<div class="icon">✗</div>', warn: '<div class="icon">!</div>' };
+  const allUp = checks.every(c => c.status === 'up');
+
+  document.getElementById('checks').innerHTML = checks.map(c => `
+    <div class="check ${c.status}">
+      ${iconMap[c.status]}
+      <div class="info">
+        <h3>${c.name}</h3>
+        <div class="desc">${c.desc}</div>
+        <div class="data">${c.data}</div>
+      </div>
+    </div>`).join('');
+
+  // Update metrics from stats
+  try {
+    const r = await fetch('/api/stats');
+    if (r.ok) {
+      const s = await r.json();
+      document.getElementById('m-subs').textContent = s.activeSubs ?? '—';
+      document.getElementById('m-delivered').textContent = s.totalDeliveries ?? '—';
+      document.getElementById('m-success').textContent = s.successRate ? s.successRate + '%' : '—';
+    }
+  } catch {}
+
+  // Delivery log
+  try {
+    const r = await fetch('/api/deliveries?limit=8');
+    if (r.ok) {
+      const dl = await r.json();
+      document.getElementById('events').innerHTML = dl.length ? 
+        `<table><thead><tr><th>Time</th><th>Sub</th><th>Status</th><th>Latency</th></tr></thead>
+        <tbody>${dl.map(d => {
+          const ok = d.status >= 200 && d.status < 300;
+          return `<tr><td>${new Date(d.created_at).toLocaleTimeString()}</td><td>${d.sub_id}</td><td class="${ok?'ok':'bad'}">${d.status??'failed'}</td><td>${d.latency_ms}ms</td></tr>`;
+        }).join('')}</tbody></table>` : 
+        '<div style="text-align:center;color:var(--g4);padding:20px">No deliveries yet — matcher is waiting for events.</div>';
+    }
+  } catch {}
+
+  const elapsed = Date.now() - t0;
+  document.getElementById('status-time').textContent = `Last checked ${new Date().toLocaleTimeString()} · ${elapsed}ms`;
+  document.getElementById('m-uptime').textContent = Math.floor(performance.now() / 1000) + 's';
+
+  setTimeout(refresh, 5000);
+}
+
+refresh();
+</script>
+</body>
+</html>

@@ -1,0 +1,7 @@
+{
+  "and": [
+    { "field": "eventName", "op": "eq", "value": "Transfer" },
+    { "field": "to", "op": "eq", "value": "0xPOOL_ADDRESS" },
+    { "field": "value", "op": "gte", "value": "50000000000000000000000" }
+  ]
+}

@@ -1,0 +1,343 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Warden · Docs</title>
+<link rel="icon" href="./favicon.png">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--g:#bcfc07;--bk:#000;--w:#fff;--g1:#f5f5f5;--g2:#e5e5e5;--g4:#999;--g6:#666;--code:#0d1117}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Inter,system-ui,sans-serif;color:var(--bk);background:var(--w);-webkit-font-smoothing:antialiased}
+.mx{max-width:960px;margin:0 auto;padding:0 24px}
+nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.94);backdrop-filter:blur(12px);border-bottom:2px solid var(--bk);padding:12px 0}
+nav .mx{display:flex;align-items:center;justify-content:space-between}
+nav .logo{font:700 16px Inter;color:var(--bk);text-decoration:none}
+nav .links{display:flex;gap:18px;align-items:center}
+nav .links a{font:500 13px Inter;color:var(--g6);text-decoration:none}
+nav .links a:hover{color:var(--bk)}
+.hero{padding:60px 0 20px}
+h1{font:800 38px/1.1 Inter;letter-spacing:-.03em;margin-bottom:12px}
+.hero p{font:400 15px/1.6 Inter;color:var(--g6)}
+h2{font:700 22px Inter;margin:48px 0 16px;padding-top:24px;border-top:2px solid var(--bk);letter-spacing:-.02em}
+h3{font:600 15px Inter;margin:28px 0 10px}
+h3:before{content:"> ";color:var(--g);font:700 13px JetBrains Mono}
+p{font:400 14px/1.7 Inter;color:var(--g6);margin-bottom:12px}
+code{font:400 12px/1.6 JetBrains Mono;background:var(--g1);padding:2px 7px;border-radius:4px;color:var(--bk)}
+pre{font:400 12.5px/1.6 JetBrains Mono;background:var(--code);color:#e6edf3;padding:16px 20px;border-radius:10px;overflow-x:auto;margin:12px 0;border:1px solid #222;white-space:pre}
+table{width:100%;border-collapse:collapse;margin:14px 0}
+th{text-align:left;font:600 11px Inter;padding:10px 12px;border-bottom:2px solid var(--bk);text-transform:uppercase;letter-spacing:.06em;color:var(--g6)}
+td{font:400 12.5px/1.5 JetBrains Mono;padding:9px 12px;border-bottom:1px solid var(--g2)}
+tr:hover td{background:var(--g1)}
+.note{background:var(--w);border:2px solid var(--bk);padding:16px 18px;margin:18px 0;font:400 13px/1.6 Inter;color:var(--g6)}
+.note strong{color:var(--bk)}
+.sidebar{position:sticky;top:96px;width:200px;flex-shrink:0;margin-right:48px}.sidebar a{display:block;font:500 14px Inter;color:var(--g6);text-decoration:none;padding:7px 0}.sidebar a:hover{color:var(--bk)}@media(max-width:900px){.sidebar{display:none}}.reftoc{display:flex;flex-wrap:wrap;gap:6px;margin:32px 0 8px}
+.reftoc a{font:500 11.5px Inter;color:var(--g6);text-decoration:none;padding:5px 12px;border:1px solid var(--g2);border-radius:20px}
+.reftoc a:hover{color:var(--bk);border-color:var(--bk)}
+footer{border-top:2px solid var(--bk);margin-top:60px;padding:20px 0;text-align:center;font:400 12px Inter;color:var(--g4)}
+@media(max-width:768px){.mx{padding:0 16px}h1{font-size:28px}h2{font-size:18px}}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="mx">
+    <a href="./" class="logo" style="display:flex;align-items:center;gap:6px">
+      <img src="./logo.jpg" width="18" height="18" alt="" style="border:1px solid var(--bk)">
+      warden</a>
+    <div class="links">
+      <a href="./">Landing</a>
+      <a href="./app">App</a>
+      <a href="./dashboard">Dashboard</a>
+      <a href="./demo.html">Demo</a>
+      <a href="https://github.com/wardenhood/Warden" target="_blank">GitHub ↗</a>
+    </div>
+  </div>
+</nav>
+
+<div class="mx" style="display:flex;align-items:flex-start">
+<nav class="sidebar">
+<a href="#getting-started">Getting Started</a>
+<a href="#cli">CLI Reference</a>
+<a href="#predicate">Predicate Language</a>
+<a href="#mcp">MCP Integration</a>
+<a href="#sdk">SDK</a>
+<a href="#security">Security</a>
+<a href="#architecture">Architecture</a>
+<a href="#contract">Contract</a>
+<a href="#docker">Docker</a>
+<a href="#deploy">Deployment</a>
+</nav>
+<div style="flex:1;min-width:0">
+<div class="hero">
+<h1>Documentation</h1>
+<p>Set up, configure, and run Warden — real-time chain surveillance for Robinhood Chain. Pick what to watch in plain English, lock ETH, and receive every match at your webhook under a second.</p>
+</div>
+
+
+
+<h2 id="getting-started">Getting Started</h2>
+
+<h3>Prerequisites</h3>
+<table>
+<tr><td><code>Node.js 20+</code></td><td>Matcher requires ESM + WebSocket</td></tr>
+<tr><td><code>Foundry</code></td><td>Contract compilation and deployment</td></tr>
+<tr><td><code>RHC RPC</code></td><td>HTTP (JSON-RPC) + WebSocket (eth_subscribe)</td></tr>
+<tr><td><code>ETH on RHC</code></td><td>Escrow deposits + gas fees</td></tr>
+</table>
+
+<h3>5-minute setup</h3>
+<pre># Clone + install
+git clone https://github.com/wardenhood/Warden && cd Warden
+cd matcher && npm install && npm run build && cd ..
+
+# Deploy escrow contract
+cd foundry && forge build
+forge create --rpc-url $RHC_HTTP_URL --private-key $KEY \
+  src/StreamEscrow.sol:StreamEscrow \
+  --constructor-args $MATCHER_ADDRESS 100000000000000
+cd ..
+
+# Start matcher
+cd matcher
+RHC_WSS_URL=wss://... ESCROW_ADDRESS=0x... node dist/index.js
+
+# Start workspace (separate terminal)
+cd workspace && node server.mjs
+# Open http://localhost:4000</pre>
+
+<h2 id="cli">CLI Reference</h2>
+
+<table>
+<tr><th>Command</th><th>What it does</th></tr>
+<tr><td><code>warden ai "...text..."</code></td><td>Convert plain English → JSON predicate</td></tr>
+<tr><td><code>warden subscribe --ai "..." --webhook URL --amount 0.05</code></td><td>Create subscription on-chain, lock ETH</td></tr>
+<tr><td><code>warden list</code></td><td>List all active subscriptions</td></tr>
+<tr><td><code>warden cancel &lt;sub-id&gt;</code></td><td>Cancel subscription, refund remaining ETH</td></tr>
+<tr><td><code>warden watch --ai "..." --webhook URL --amount 0.1</code></td><td>Subscribe + live tail in one command</td></tr>
+<tr><td><code>warden tail</code></td><td>Stream latest deliveries live</td></tr>
+<tr><td><code>warden sandbox --webhook URL</code></td><td>Fire test webhooks — zero ETH, zero cost</td></tr>
+<tr><td><code>warden doctor</code></td><td>Check system health (RPC, contract, DB)</td></tr>
+<tr><td><code>warden replay-last</code></td><td>Replay recent deliveries (no on-chain cost)</td></tr>
+</table>
+
+<h2 id="predicate">Predicate Language</h2>
+
+<p>Predicates describe what on-chain events to watch. Each condition has <code>field</code>, <code>op</code>, and <code>value</code>. Combine with <code>and</code> / <code>or</code>.</p>
+
+<h3>Plain English → JSON (offline, no LLM)</h3>
+<pre>$ warden ai "whales over 100k TSLA"
+→ Watching Transfer events · ≥ 100,000 TSLA</pre>
+
+<h3>JSON predicate</h3>
+<pre>{
+  "and": [
+    { "field": "eventName", "op": "eq",  "value": "Transfer" },
+    { "field": "address",   "op": "eq",  "value": "0x322F0..." },
+    { "field": "value",     "op": "gte", "value": "100000000000000000000000" }
+  ]
+}</pre>
+
+<h3>Operators</h3>
+<table>
+<tr><th>Op</th><th>Example</th></tr>
+<tr><td><code>eq</code></td><td><code>{ field: "eventName", op: "eq", value: "Transfer" }</code></td></tr>
+<tr><td><code>neq</code></td><td>Not equal</td></tr>
+<tr><td><code>gte</code> / <code>lte</code></td><td>Greater / less than or equal (numeric, BigInt-safe)</td></tr>
+<tr><td><code>gt</code> / <code>lt</code></td><td>Strict greater / less than</td></tr>
+<tr><td><code>in</code></td><td><code>{ field: "from", op: "in", value: ["0xAAA","0xBBB"] }</code></td></tr>
+<tr><td><code>not_in</code></td><td>Value not in the given array</td></tr>
+<tr><td><code>contains</code></td><td>Substring match</td></tr>
+<tr><td><code>starts_with</code></td><td>Prefix match</td></tr>
+<tr><td><code>regex</code></td><td>Pattern match — sandboxed, ReDoS-protected</td></tr>
+</table>
+
+<h3>Nested logic</h3>
+<pre>{
+  "and": [
+    { "field": "eventName", "op": "eq", "value": "Transfer" },
+    { "field": "value", "op": "gte", "value": "1000000000000000000000" },
+    { "or": [
+        { "field": "from", "op": "eq", "value": "0xWhale1" },
+        { "field": "from", "op": "eq", "value": "0xWhale2" }
+    ]}
+  ]
+}</pre>
+
+<div class="note"><strong>ReDoS Protection:</strong> Regex predicates validated by static heuristic (Layer 1) at registration + worker pool with 300ms timeout (Layer 2). Fail-closed.</div>
+
+<h2 id="mcp">MCP Integration</h2>
+
+<p>Warden exposes 6 tools via Model Context Protocol — compatible with Claude, Cursor, Windsurf, VS Code, and any MCP client.</p>
+
+<table>
+<tr><th>Tool</th><th>Access</th><th>Description</th></tr>
+<tr><td><code>recent_deliveries</code></td><td>Public</td><td>List recent matched-event deliveries</td></tr>
+<tr><td><code>parse_predicate</code></td><td>Public</td><td>Convert plain English → JSON predicate</td></tr>
+<tr><td><code>warden_sandbox_dispatch</code></td><td>Public</td><td>Fire test webhooks (SSRF-protected)</td></tr>
+<tr><td><code>subscribe_to_events</code></td><td>Local key</td><td>Create subscription on-chain</td></tr>
+<tr><td><code>list_subscriptions</code></td><td>Local key</td><td>List active subs (hmacSecret redacted)</td></tr>
+<tr><td><code>cancel_subscription</code></td><td>Local key</td><td>Cancel subscription, refund escrow</td></tr>
+</table>
+
+<pre># One-command setup
+warden mcp setup
+# → Installs to Claude Desktop / Cursor / Windsurf config
+# → 3 tools available immediately (hosted, no key)
+# → 3 signing tools available locally (needs USER_PRIVATE_KEY)</pre>
+
+<h2 id="sdk">SDK</h2>
+
+<h3>TypeScript</h3>
+<pre>import { Warden } from "@warden/client";
+
+const w = new Warden({
+  rpcUrl: "https://rhc.rpc...",
+  escrowAddress: "0x...",
+  privateKey: "0x...",
+});
+
+// Subscribe with plain English
+const { subId, txHash } = await w.subscribe({
+  ai: "whales over 100k TSLA",
+  webhookUrl: "https://webhook.site/abc",
+  amountEth: "0.05",
+});
+
+// Sandbox test — DNS-pinned, SSRF-safe
+const results = await w.sandbox("https://webhook.site/abc", 3);</pre>
+
+<h3>Python</h3>
+<pre>from warden import Warden
+
+w = Warden(
+    rpc_url="https://rhc.rpc...",
+    escrow_address="0x...",
+    private_key="0x...",
+)
+
+# Subscribe
+result = w.subscribe(
+    ai="whales over 100k TSLA",
+    webhook_url="https://webhook.site/abc",
+    amount_eth="0.05",
+)
+
+# Sandbox — DNS-pinned via ssrf_guard
+results = w.sandbox("https://webhook.site/abc", count=3)</pre>
+
+<h2 id="security">Security</h2>
+
+<h3>SSRF Protection (2 layers)</h3>
+
+<p><strong>Layer 1 — Hostname pre-filter:</strong> Blocks literal private IPs before any request.</p>
+
+<table>
+<tr><td><code>127.0.0.0/8</code></td><td>All loopback addresses</td></tr>
+<tr><td><code>10.0.0.0/8</code></td><td>RFC1918 Class A</td></tr>
+<tr><td><code>172.16.0.0/12</code></td><td>RFC1918 Class B (per-octet)</td></tr>
+<tr><td><code>192.168.0.0/16</code></td><td>RFC1918 Class C</td></tr>
+<tr><td><code>169.254.0.0/16</code></td><td>Link-local + cloud metadata</td></tr>
+<tr><td><code>100.64.0.0/10</code></td><td>CGNAT (cloud provider internal)</td></tr>
+<tr><td><code>fc00::/7</code></td><td>IPv6 unique local</td></tr>
+<tr><td><code>fe80::/10</code></td><td>IPv6 link-local</td></tr>
+<tr><td>Obfuscated IPs</td><td>Decimal, hex, octal normalized</td></tr>
+</table>
+
+<p><strong>Layer 2 — DNS-pinned connection:</strong> Resolves hostname once, validates resolved IP, connects directly — no re-resolution, no DNS rebinding.</p>
+
+<table>
+<tr><td><code>DNS resolution</code></td><td>Exactly once per attempt</td></tr>
+<tr><td><code>IP validation</code></td><td>Every address checked against blocklist</td></tr>
+<tr><td><code>Connection pinning</code></td><td>Connects directly to validated IP</td></tr>
+<tr><td><code>Redirect handling</code></td><td>Manual — each hop re-validated</td></tr>
+<tr><td><code>Timeout</code></td><td>10s per attempt</td></tr>
+</table>
+
+<h3>HMAC Signing</h3>
+<p>Every webhook carries <code>X-Warden-Signature</code> (SHA-256 HMAC). Verify with constant-time comparison.</p>
+
+<h3>XSS Prevention</h3>
+<p>All trace fields HTML-escaped via <code>textContent</code> before <code>innerHTML</code>.</p>
+
+<h3>ReDoS Defense</h3>
+<p>Layer 1 heuristic at registration. Layer 2 worker pool (capped, 300ms timeout). Worker cap + queue.</p>
+
+<h2 id="architecture">Architecture</h2>
+
+<pre>RHC RPC ──WS──▶ Warden Matcher ──POST──▶ Your Webhook
+    │                │
+    │                │ recordDeliveries()
+    ▼                ▼
+  eth_subscribe  StreamEscrow (Solidity)</pre>
+
+<table>
+<tr><th>Component</th><th>Stack</th><th>Role</th></tr>
+<tr><td>Matcher</td><td>Node 20 / TypeScript</td><td>WebSocket subscriber, predicate evaluator, dispatcher</td></tr>
+<tr><td>StreamEscrow</td><td>Solidity 0.8.24</td><td>On-chain escrow + receipt ledger. Hashes only.</td></tr>
+<tr><td>Workspace</td><td>Express / Static</td><td>Visual builder, dry-run, sandbox, live feed</td></tr>
+<tr><td>Dashboard</td><td>Express / SQLite</td><td>Real-time metrics + delivery log</td></tr>
+<tr><td>MCP Server</td><td>TypeScript</td><td>6 tools for AI agent integration</td></tr>
+<tr><td>SDK</td><td>TS + Python</td><td>Client libraries with built-in SSRF protection</td></tr>
+</table>
+
+<h3>Data flow</h3>
+<ol style="padding-left:20px;margin:12px 0">
+<li style="font:400 14px/1.7 Inter;color:var(--g6);margin-bottom:6px">User describes event → parser generates JSON predicate</li>
+<li style="font:400 14px/1.7 Inter;color:var(--g6);margin-bottom:6px">Predicate + webhook validated (SSRF) → hashed → stored on-chain via <code>subscribe()</code></li>
+<li style="font:400 14px/1.7 Inter;color:var(--g6);margin-bottom:6px">Matcher watches RHC logs via <code>eth_subscribe</code> — real-time, no polling</li>
+<li style="font:400 14px/1.7 Inter;color:var(--g6);margin-bottom:6px">On match → broadcast SSE → deliver webhook (HMAC-signed, retried 3×)</li>
+<li style="font:400 14px/1.7 Inter;color:var(--g6);margin-bottom:6px">Successful delivery → <code>recordDeliveries()</code> (batch, up to 50/tx)</li>
+<li style="font:400 14px/1.7 Inter;color:var(--g6);margin-bottom:6px">Fee deducted from subscriber escrow. Receipt on-chain permanently.</li>
+</ol>
+
+<h2 id="contract">Contract</h2>
+
+<p><strong>StreamEscrow</strong> — deployed on Robinhood Chain (chain ID 4663).</p>
+
+<table>
+<tr><th>Function</th><th>Description</th></tr>
+<tr><td><code>subscribe(hash, hash)</code></td><td>Lock ETH, register subscription. Hashes only.</td></tr>
+<tr><td><code>recordDeliveries(ids[], hashes[])</code></td><td>Batch receipt (up to 50/tx). Deducts fee.</td></tr>
+<tr><td><code>cancel(subId)</code></td><td>Deactivate, refund remaining escrow.</td></tr>
+<tr><td><code>withdrawFees(amount)</code></td><td>Owner withdraw. Guarded by <code>totalEscrowed</code>.</td></tr>
+</table>
+
+<h2 id="docker">Docker</h2>
+
+<pre>cp .env.example .env
+# Fill in: RHC_WSS_URL, RHC_HTTP_URL, ESCROW_ADDRESS, MATCHER_PRIVATE_KEY
+docker compose -f docker/docker-compose.yml up --build</pre>
+
+<table>
+<tr><th>Service</th><th>Port</th><th>Description</th></tr>
+<tr><td>Matcher</td><td>9090 (internal)</td><td>Core watcher. SSE + metrics internally only.</td></tr>
+<tr><td>Workspace</td><td>4000</td><td>Visual builder + sandbox + live feed.</td></tr>
+<tr><td>Prometheus</td><td>9091</td><td>Scrapes matcher:9090 internally.</td></tr>
+<tr><td>Grafana</td><td>3000</td><td>10-panel dashboard.</td></tr>
+</table>
+
+<h2 id="deploy">Deployment</h2>
+
+<h3>VPS — one command</h3>
+<pre>curl -fsSL https://raw.githubusercontent.com/wardenhood/Warden/main/scripts/install.sh | \
+  WARDEN_RHC_WSS_URL=wss://... \
+  WARDEN_RHC_HTTP_URL=https://... \
+  WARDEN_ESCROW_ADDRESS=0x... bash</pre>
+<p>Installs: system deps → Node 20 → Foundry → Docker → Caddy → Warden systemd units.</p>
+
+<h3>Fly.io / Render</h3>
+<p>Deploy as single-process app with persistent volume for SQLite. Set env vars.</p>
+
+<h3>GitHub Pages</h3>
+<p>Landing + docs + demo auto-deployed to <code>wardenhood.github.io/Warden</code>.</p>
+
+<div class="note"><strong>Independent Project:</strong> Warden is a community project built on Robinhood Chain. Not affiliated with Robinhood Markets, Inc.</div>
+
+<footer>⚡ warden · <a href="https://github.com/wardenhood/Warden" style="color:var(--g4)">GitHub</a> · <a href="https://robinhoodchain.blockscout.com" style="color:var(--g4)">Block Explorer</a></footer>
+
+</div>
+</div>
+</body>
+</html>

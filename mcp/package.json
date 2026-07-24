@@ -1,0 +1,22 @@
+{
+  "name": "warden-mcp",
+  "version": "0.2.0",
+  "type": "module",
+  "description": "MCP server exposing Warden on-chain event tools to Claude, Cursor, Windsurf, and any MCP client.",
+  "bin": {
+    "warden-mcp": "dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc -p .",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.5.0",
+    "ethers": "^6.13.2",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^22.5.0",
+    "typescript": "^5.5.4"
+  }
+}

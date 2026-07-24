@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0a0a0a"/>
+      <stop offset="100%" stop-color="#1a1a2e"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#bcfc07"/>
+      <stop offset="100%" stop-color="#8be000"/>
+    </linearGradient>
+  </defs>
+
+  <!-- background -->
+  <rect width="512" height="512" rx="96" fill="url(#bg)"/>
+
+  <!-- shield shape -->
+  <path d="M256 40 L420 120 L420 280 Q420 420 256 472 Q92 420 92 280 L92 120 Z"
+        fill="none" stroke="url(#accent)" stroke-width="12" stroke-linejoin="round"/>
+
+  <!-- inner W monogram -->
+  <text x="256" y="310" text-anchor="middle"
+        font-family="Inter, system-ui, sans-serif" font-weight="800" font-size="180"
+        fill="url(#accent)" letter-spacing="-8">W</text>
+
+  <!-- watchful eye dots -->
+  <circle cx="170" cy="195" r="14" fill="url(#accent)"/>
+  <circle cx="342" cy="195" r="14" fill="url(#accent)"/>
+  <circle cx="170" cy="400" r="14" fill="url(#accent)"/>
+  <circle cx="342" cy="400" r="14" fill="url(#accent)"/>
+
+  <!-- corner brackets -->
+  <path d="M130 130 L160 130 L160 160" fill="none" stroke="url(#accent)" stroke-width="6" stroke-linecap="round"/>
+  <path d="M382 130 L352 130 L352 160" fill="none" stroke="url(#accent)" stroke-width="6" stroke-linecap="round"/>
+  <path d="M130 382 L160 382 L160 352" fill="none" stroke="url(#accent)" stroke-width="6" stroke-linecap="round"/>
+  <path d="M382 382 L352 382 L352 352" fill="none" stroke="url(#accent)" stroke-width="6" stroke-linecap="round"/>
+</svg>

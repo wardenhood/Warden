@@ -1,0 +1,7 @@
+{
+  "and": [
+    { "field": "eventName", "op": "eq", "value": "Transfer" },
+    { "field": "from", "op": "eq", "value": "0xTREASURY_ADDRESS_HERE" },
+    { "field": "value", "op": "gte", "value": "500000000000000000000" }
+  ]
+}

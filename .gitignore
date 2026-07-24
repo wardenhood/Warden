@@ -1,0 +1,47 @@
+# Dependencies
+node_modules/
+matcher/node_modules/
+mcp/node_modules/
+dashboard/node_modules/
+cli/node_modules/
+sdk/node_modules/
+workspace/node_modules/
+matcher/package-lock.json
+mcp/package-lock.json
+dashboard/package-lock.json
+cli/package-lock.json
+sdk/package-lock.json
+workspace/package-lock.json
+
+# Build output
+matcher/dist/
+mcp/dist/
+dashboard/dist/
+sdk/dist/
+
+# Foundry
+foundry/out/
+foundry/cache/
+foundry/lib/
+
+# Database
+*.db
+*.db-journal
+*.db-wal
+
+# Environment
+.env
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Build artifacts
+public/
+.vercel

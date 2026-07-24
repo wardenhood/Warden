@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Warden · Dashboard</title>
+<link rel="icon" href="../favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green: #bcfc07; --black: #000; --white: #fff;
+    --gray-100: #f5f5f5; --gray-200: #e5e5e5;
+    --gray-400: #999; --gray-600: #666;
+    --code-bg: #0d1117; --code-fg: #e6edf3;
+    --ok: #3edc64; --bad: #f85149;
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:'Inter',system-ui,sans-serif;color:var(--black);
+    background:var(--white);-webkit-font-smoothing:antialiased;
+  }
+  .mx{max-width:1200px;margin:0 auto;padding:0 28px}
+
+  nav{
+    position:sticky;top:0;z-index:100;background:rgba(255,255,255,.94);
+    backdrop-filter:blur(12px);border-bottom:1px solid rgba(0,0,0,.08);padding:12px 0;
+  }
+  nav .mx{display:flex;align-items:center;justify-content:space-between}
+  nav .logo{font:700 17px 'Inter';color:var(--black);text-decoration:none;letter-spacing:-.02em}
+  nav .logo svg{width:18px;height:18px;vertical-align:middle;margin-right:6px}
+  nav .links{display:flex;gap:20px;align-items:center}
+  nav .links a{font:500 14px 'Inter';color:var(--gray-600);text-decoration:none}
+  nav .links a:hover{color:var(--black)}
+  nav .links .active{color:var(--black);border-bottom:2px solid var(--green)}
+
+  /* header */
+  .head{padding:40px 0 32px}
+  .head h1{font:700 28px/1.2 'Inter';letter-spacing:-.03em;margin-bottom:4px}
+  .head .sub{font:400 15px 'Inter';color:var(--gray-600)}
+  .dot{width:8px;height:8px;border-radius:50%;background:var(--ok);display:inline-block;margin-right:6px;vertical-align:middle;animation:pulse 1.6s infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+
+  /* stats */
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:40px}
+  .stat{
+    border:1px solid var(--gray-200);border-radius:14px;padding:22px 24px;background:var(--white)
+  }
+  .stat .lbl{font:600 10px 'JetBrains Mono';color:var(--gray-400);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px}
+  .stat .val{font:700 32px/1 'Inter';color:var(--black);letter-spacing:-.02em}
+
+  /* deliveries */
+  .deliveries{margin-bottom:60px}
+  .deliveries h3{font:600 16px 'Inter';margin-bottom:16px;display:flex;align-items:center;gap:8px}
+
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th{text-align:left;padding:10px 12px;border-bottom:2px solid var(--gray-200);font:600 10px 'JetBrains Mono';color:var(--gray-400);text-transform:uppercase;letter-spacing:.06em}
+  td{padding:10px 12px;border-bottom:1px solid var(--gray-200);font-family:'Inter'}
+  td.ok{color:var(--ok);font-weight:600}
+  td.bad{color:var(--bad);font-weight:600}
+  td.mono{font:400 12px 'JetBrains Mono';color:var(--gray-600)}
+  .del-row{cursor:pointer;transition:background .1s}
+  .del-row:hover{background:var(--gray-100)}
+
+  .trace-panel{display:none;background:var(--code-bg);border-radius:8px;padding:16px 20px;margin:4px 0 12px}
+  .trace-panel.open{display:block}
+  .trace-line{font:400 12px 'JetBrains Mono';padding:4px 0;display:flex;gap:12px;align-items:baseline}
+  .trace-line .tf{color:var(--green);min-width:100px}
+  .trace-line .to{color:var(--gray-400);min-width:50px}
+  .trace-line .tv{color:var(--code-fg)}
+  .trace-line.mok{border-left:2px solid var(--ok);padding-left:14px}
+  .trace-line.mno{border-left:2px solid var(--bad);padding-left:14px}
+  .empty{color:var(--gray-400);padding:24px 0;text-align:center;font:400 14px 'Inter'}
+
+  @media(max-width:768px){.stats{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="mx">
+    <a href="../" class="logo" style="display:flex;align-items:center;gap:6px">
+      <img src="../logo.jpg" width="18" height="18" alt="" style="border:1px solid #000">
+      warden
+    </a>
+    <div class="links">
+      <a href="../">← Landing</a>
+      <a href="../app">App</a>
+      <a href="../dashboard" class="active">Dashboard</a>
+    </div>
+  </div>
+</nav>
+
+<div class="mx">
+  <div class="head">
+    <h1>Dashboard</h1>
+    <p class="sub">Real-time event push for Robinhood Chain · status overview</p>
+  </div>
+
+  <div class="stats">
+    <div class="stat">
+      <div class="lbl">Active subscriptions</div>
+      <div class="val" id="ss">—</div>
+    </div>
+    <div class="stat">
+      <div class="lbl">Total deliveries</div>
+      <div class="val" id="st">—</div>
+    </div>
+    <div class="stat">
+      <div class="lbl">Success rate</div>
+      <div class="val" id="sr">—</div>
+    </div>
+    <div class="stat">
+      <div class="lbl">p50 latency</div>
+      <div class="val" id="sl">—</div>
+    </div>
+  </div>
+
+  <div class="deliveries">
+    <h3><span class="dot" id="live-dot" style="display:none"></span> Recent deliveries</h3>
+    <table>
+      <thead><tr><th>Time</th><th>Sub</th><th>Status</th><th>Latency</th><th>Tx</th></tr></thead>
+      <tbody id="del-body"><tr><td class="empty" colspan="5">No deliveries yet — matcher is watching.</td></tr></tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+async function refresh(){
+  try{
+    const[st,dl]=await Promise.all([fetch('/api/stats').then(r=>r.json()),fetch('/api/deliveries?limit=25').then(r=>r.json())]);
+    document.getElementById('ss').textContent=st.activeSubs??'—';
+    document.getElementById('st').textContent=st.totalDeliveries??'—';
+    document.getElementById('sr').textContent=st.successRate===null?'—':st.successRate+'%';
+    document.getElementById('sl').textContent=st.p50LatencyMs===null?'—':st.p50LatencyMs+'ms';
+
+    const body=document.getElementById('del-body');
+    if(!dl.length){body.innerHTML='<tr><td class="empty" colspan="5">No deliveries yet — matcher is watching.</td></tr>';return}
+    document.getElementById('live-dot').style.display='inline-block';
+    body.innerHTML=dl.map((d,i)=>{
+      const ok=d.status>=200&&d.status<300;
+      const tid=`tr-${i}`;
+      return `<tr class="del-row" onclick="toggle('${tid}')">
+        <td class="mono">${new Date(d.created_at).toLocaleTimeString()}</td><td>${d.sub_id}</td>
+        <td class="${ok?'ok':'bad'}">${d.status??'failed'}</td><td>${d.latency_ms}ms</td>
+        <td class="mono">${d.tx_hash?d.tx_hash.slice(0,10)+'…':'—'}</td>
+      </tr>
+      <tr id="${tid}" class="trace-panel"><td colspan="5">${d.trace_json?JSON.parse(d.trace_json).map(t=>`<div class="trace-line ${t.matched?'mok':'mno'}"><span class="tf">${esc(t.field)}</span><span class="to">${t.op}</span><span class="tv">expected: ${tr(esc(t.expected),30)} · actual: ${tr(esc(t.actual),30)}</span></div>`).join(''):'<span style="color:var(--gray-400)">No match trace available.</span>'}</td></tr>`;
+    }).join('');
+  }catch(e){}
+}
+function toggle(id){document.querySelectorAll('.trace-panel').forEach(e=>{if(e.id!==id)e.classList.remove('open')});document.getElementById(id).classList.toggle('open')}
+function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML}
+function tr(s,n){return s&&s.length>n?s.slice(0,n)+'…':s||'—'}
+refresh();setInterval(refresh,5000);
+</script>
+</body>
+</html>

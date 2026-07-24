@@ -1,0 +1,319 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Warden · App</title>
+<link rel="icon" type="image/svg+xml" href="./favicon.svg">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--g:#bcfc07;--bk:#000;--w:#fff;--g1:#f5f5f5;--g2:#e5e5e5;--g4:#999;--g6:#666;--code:#0d1117;--ok:#3edc64;--bad:#f85149;--y:#fbbf24}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',system-ui,sans-serif;color:var(--bk);background:var(--w);-webkit-font-smoothing:antialiased}
+.mx{max-width:1240px;margin:0 auto;padding:0 28px}
+
+nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.94);backdrop-filter:blur(12px);border-bottom:1px solid rgba(0,0,0,.08);padding:12px 0}
+nav .mx{display:flex;align-items:center;justify-content:space-between}
+nav .logo{font:700 17px 'Inter';color:var(--bk);text-decoration:none;letter-spacing:-.02em}
+nav .logo svg{width:18px;height:18px;vertical-align:middle;margin-right:6px}
+nav .links{display:flex;gap:20px;align-items:center}
+nav .links a{font:500 14px 'Inter';color:var(--g6);text-decoration:none}
+nav .links a:hover,nav .links a.active{color:var(--bk)}
+nav .badge{font:600 10px 'JetBrains Mono';background:var(--g);padding:4px 10px;border-radius:14px;color:var(--bk)}
+nav .wallet-btn{font:600 12px 'Inter';background:var(--bk);color:var(--w);border:none;padding:9px 18px;border-radius:8px;cursor:pointer}
+
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:32px 0}
+.stat{border:1px solid var(--g2);border-radius:14px;padding:20px 22px;background:var(--w)}
+.stat .l{font:600 10px 'JetBrains Mono';color:var(--g4);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+.stat .v{font:700 28px 'Inter';color:var(--bk);letter-spacing:-.02em}
+.stat .v2{font:400 12px 'Inter';color:var(--g6);margin-top:2px}
+
+.tabs{display:flex;gap:0;border-bottom:2px solid var(--g2);margin-bottom:24px}
+.tabs button{background:none;border:none;font:600 14px 'Inter';color:var(--g4);padding:12px 22px;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .12s;display:flex;align-items:center;gap:8px}
+.tabs button:hover{color:var(--bk)}
+.tabs button.active{color:var(--bk);border-bottom-color:var(--g)}
+.tabs .cnt{font:600 10px 'JetBrains Mono';background:var(--g1);padding:2px 8px;border-radius:8px;color:var(--g6)}
+.tab-panel{display:none}.tab-panel.active{display:block}
+
+/* sub filters */
+.sub-bar{display:flex;align-items:center;gap:10px;margin-bottom:20px;flex-wrap:wrap}
+.sub-bar .filter{font:600 11px 'JetBrains Mono';background:var(--w);border:1px solid var(--g2);color:var(--g6);padding:7px 14px;border-radius:8px;cursor:pointer;transition:all .12s;text-transform:uppercase;letter-spacing:.04em}
+.sub-bar .filter:hover,.sub-bar .filter.sel{background:var(--bk);color:var(--w);border-color:var(--bk)}
+.sub-bar .spacer{flex:1}
+.sub-bar input{border:1px solid var(--g2);font:400 13px 'JetBrains Mono';padding:7px 14px;border-radius:8px;outline:none;background:var(--g1);min-width:180px}
+.sub-bar input:focus{border-color:var(--g)}
+
+/* sub table */
+table{width:100%;border-collapse:collapse}
+th{text-align:left;padding:10px 14px;border-bottom:2px solid var(--g2);font:600 10px 'JetBrains Mono';color:var(--g4);text-transform:uppercase;letter-spacing:.06em}
+td{padding:12px 14px;border-bottom:1px solid var(--g2);font:400 13px 'Inter'}
+td.mono{font:400 11px 'JetBrains Mono';color:var(--g6)}
+td .tag{font:600 9px 'JetBrains Mono';padding:3px 8px;border-radius:6px;display:inline-block}
+td .tag.defi{background:#e8f5e9;color:#2e7d32}td .tag.dao{background:#fff3e0;color:#e65100}td .tag.risk{background:#fce4ec;color:#c62828}td .tag.agentic{background:#e3f2fd;color:#1565c0}
+td .bal{font:600 13px 'Inter'}
+td .bal.low{color:var(--bad)}
+td .action-btn{font:500 11px 'Inter';color:var(--g6);background:none;border:1px solid var(--g2);padding:5px 12px;border-radius:6px;cursor:pointer;transition:all .12s}
+td .action-btn:hover{border-color:var(--bk);color:var(--bk)}
+.sub-footer{display:flex;justify-content:space-between;align-items:center;margin-top:16px;font:400 11px 'JetBrains Mono';color:var(--g4)}
+.sub-footer .pwr{font:400 11px 'Inter';color:var(--g6)}
+
+/* parser */
+.parser-box{border:2px solid var(--bk);border-radius:16px;padding:28px;background:var(--w)}
+.parser-box .label{font:600 11px 'JetBrains Mono';color:var(--g4);text-transform:uppercase;letter-spacing:.1em;margin-bottom:14px}
+.parser-box input{width:100%;border:1px solid var(--g2);font:400 17px 'JetBrains Mono';padding:14px 16px;border-radius:10px;outline:none;background:var(--g1)}
+.parser-box input:focus{border-color:var(--g)}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.chips button{background:var(--w);border:1px solid var(--g2);font:500 12px 'Inter';color:var(--g6);padding:6px 14px;border-radius:20px;cursor:pointer;transition:all .12s}
+.chips button:hover{border-color:var(--g);color:var(--bk)}
+
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin:24px 0}
+.panel{border:1px solid var(--g2);border-radius:14px;padding:22px;background:var(--w)}
+.panel .lbl{font:600 11px 'JetBrains Mono';color:var(--g4);text-transform:uppercase;letter-spacing:.08em;margin-bottom:14px;display:flex;justify-content:space-between}
+.panel .lbl .tag{font:600 10px 'JetBrains Mono';background:var(--g);padding:3px 8px;border-radius:10px;color:var(--bk)}
+.panel pre{font:400 13px/1.65 'JetBrains Mono';color:#e6edf3;background:var(--code);padding:16px;border-radius:10px;overflow-x:auto;white-space:pre-wrap;max-height:240px}
+.panel .sum{font:400 15px 'Inter';color:var(--g6)}
+
+.dry-grid{display:flex;flex-direction:column;gap:6px;margin-top:16px}
+.dry-grid h3{font:600 11px 'JetBrains Mono';color:var(--g4);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px}
+.dry-row{display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:8px;border:1px solid var(--g2);font:400 13px 'Inter'}
+.dry-row.match{border-left:4px solid var(--ok);background:#f0fff4}
+.dry-row.nomatch{border-left:4px solid var(--g2)}
+.dry-row .st{font:600 10px 'JetBrains Mono';min-width:70px}
+.dry-row.match .st{color:var(--ok)}.dry-row.nomatch .st{color:var(--g4)}
+.dry-row .ev{font:400 12px 'JetBrains Mono';color:var(--g6)}
+
+.sb-card{border:2px solid var(--bk);border-radius:16px;padding:32px;background:var(--w);max-width:560px}
+.sb-card h3{font:600 18px 'Inter';margin-bottom:6px}
+.sb-card p{font:400 14px/1.55 'Inter';color:var(--g6);margin-bottom:20px}
+.sb-card input{width:100%;border:1px solid var(--g2);font:400 15px 'JetBrains Mono';padding:12px 16px;border-radius:10px;outline:none;background:var(--g1)}
+.sb-card input:focus{border-color:var(--g)}
+.btn-row{display:flex;gap:10px;margin-top:16px}
+.btn{font:600 14px 'Inter';padding:12px 24px;border-radius:10px;cursor:pointer;border:2px solid var(--bk);transition:all .12s}
+.btn-fill{background:var(--bk);color:var(--w)}.btn-fill:hover{opacity:.85}
+.btn-out{background:var(--w);color:var(--bk)}.btn-out:hover{background:var(--bk);color:var(--w)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.sb-results{margin-top:16px;font:400 12px 'JetBrains Mono'}
+.sb-results div{padding:5px 0;display:flex;gap:10px}
+.sb-results .ok{color:var(--ok)}.sb-results .fail{color:var(--bad)}
+
+.act-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.act-header h3{font:600 14px 'Inter';display:flex;align-items:center;gap:8px}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--ok);display:inline-block;animation:pulse 1.5s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.trace-panel{display:none;background:var(--code);border-radius:10px;padding:16px 20px;margin:4px 0 12px}
+.trace-panel.open{display:block}
+.trace-line{font:400 11px 'JetBrains Mono';padding:4px 0;display:flex;gap:12px}
+.trace-line .tf{color:var(--g);min-width:90px}.trace-line .to{color:var(--g4);min-width:50px}.trace-line .tv{color:#e6edf3}
+.trace-line.mok{border-left:2px solid var(--ok);padding-left:14px}.trace-line.mno{border-left:2px solid var(--bad);padding-left:14px}
+.del-row{cursor:pointer;transition:background .1s}.del-row:hover{background:var(--g1)}
+.empty{color:var(--g4);padding:28px 0;text-align:center;font:400 14px 'Inter'}
+.recipelink{margin-top:20px;font:500 13px 'Inter';color:var(--g6)}
+.recipelink a{color:var(--bk);text-decoration:underline;text-underline-offset:4px}
+@media(max-width:768px){.stats{grid-template-columns:repeat(2,1fr)}.row2{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="mx">
+    <a href="../" class="logo" style="display:flex;align-items:center;gap:8px">
+      <img src="../logo.jpg" width="24" height="24" alt="" style="border:1px solid #000">
+      warden
+    </a>
+    <div class="links">
+      <a href="../">← Landing</a>
+      <a href="../app" class="active">Subscriptions</a>
+      <a href="../dashboard">Live feed</a>
+      <a href="https://robinhoodchain.blockscout.com/address/0x4e0d51Ccefe8a5b547b98770154B5F2F4177D027" target="_blank">Contract ↗</a>
+      <a href="https://github.com/wardenhood/Warden" target="_blank">GitHub ↗</a>
+      <button class="wallet-btn" onclick="connectWallet()" id="wallet-btn">Connect wallet</button>
+    </div>
+  </div>
+</nav>
+
+<div class="mx">
+  <!-- STATS -->
+  <div class="stats">
+    <div class="stat"><div class="l">Active subs</div><div class="v" id="s1">3</div><div class="v2">/ 7 total</div></div>
+    <div class="stat"><div class="l">Funds locked · ETH</div><div class="v" id="s2">0.25</div><div class="v2">~ 250 deliveries</div></div>
+    <div class="stat"><div class="l">Events delivered</div><div class="v" id="s3">14</div><div class="v2">escrow-backed lanes also write an on-chain receipt</div></div>
+    <div class="stat"><div class="l">Webhook health</div><div class="v" id="s4" style="color:var(--ok)">100%</div><div class="v2">p50 · 91ms · v0.2 metric</div></div>
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="active" onclick="switchTab('subs')">Subscriptions<span class="cnt">3</span></button>
+    <button onclick="switchTab('build')">Build<span class="cnt">parser</span></button>
+    <button onclick="switchTab('sandbox')">Sandbox<span class="cnt">test</span></button>
+    <button onclick="switchTab('activity')">Activity<span class="cnt" id="act-cnt">4</span></button>
+  </div>
+
+  <!-- ═══ SUBSCRIPTIONS TAB ═══ -->
+  <div class="tab-panel active" id="tab-subs">
+    <div class="sub-bar">
+      <button class="filter sel" onclick="filterSubs('all')">ALL</button>
+      <button class="filter" onclick="filterSubs('active')">ACTIVE</button>
+      <button class="filter" onclick="filterSubs('low')">LOW</button>
+      <button class="filter" onclick="filterSubs('depleted')">DEPLETED</button>
+      <span class="spacer"></span>
+      <input type="text" placeholder="Search subscriptions" oninput="searchSubs(this.value)">
+    </div>
+    <table>
+      <thead><tr><th>ID</th><th>Watching for</th><th>Sends to</th><th>Funds left</th><th>Sent</th><th></th></tr></thead>
+      <tbody id="subs-body"></tbody>
+    </table>
+    <div class="sub-footer">
+      <span>3 subscriptions · 3 active</span>
+      <span class="pwr">Powered by eth_subscribe + Block Explorer</span>
+    </div>
+  </div>
+
+  <!-- ═══ BUILD TAB ═══ -->
+  <div class="tab-panel" id="tab-build">
+    <div class="parser-box">
+      <div class="label">Describe an on-chain event in plain English · offline rule-based parser · no LLM</div>
+      <input id="ai-in" type="text" placeholder="e.g. whales over 100k TSLA" autocomplete="off" spellcheck="false">
+      <div class="chips">
+        <button onclick="demo('whales over 100k TSLA')">whales over 100k TSLA</button>
+        <button onclick="demo('transfers under 10 AAPL')">transfers under 10 AAPL</button>
+        <button onclick="demo('swap over 50000')">swap over 50k</button>
+        <button onclick="demo('liquidation from 0xPool')">liquidation</button>
+        <button onclick="demo('to 0xABC over 5000')">to address filter</button>
+      </div>
+    </div>
+    <div class="row2">
+      <div class="panel"><div class="lbl">JSON PREDICATE <span class="tag">auto</span></div><pre id="pred-out"></pre></div>
+      <div class="panel"><div class="lbl">SUMMARY</div><div class="sum" id="sum-out">Type a description above.</div></div>
+    </div>
+    <div class="dry-grid"><h3>Dry run · sample events</h3><div id="dry-grid"><div class="empty">No predicate to test.</div></div></div>
+
+    <div style="margin-top:32px;padding:24px 28px;border:2px solid var(--bk);border-radius:14px;background:var(--w);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px">
+      <div>
+        <div style="font:600 15px 'Inter';margin-bottom:4px">Ready to subscribe?</div>
+        <div style="font:400 13px 'Inter';color:var(--g6);max-width:400px" id="subscribe-hint">Copy the command below and run it in your terminal. Lock ETH and start watching.</div>
+      </div>
+      <button class="btn btn-fill" onclick="copySubscribeCmd()" style="white-space:nowrap">📋 Copy CLI Command</button>
+    </div>
+  </div>
+
+  <!-- ═══ SANDBOX TAB ═══ -->
+  <div class="tab-panel" id="tab-sandbox">
+    <div class="sb-card">
+      <h3>Fire a test webhook</h3>
+      <p>Paste a webhook.site URL. Warden fires a real HMAC-signed POST — zero ETH, zero on-chain cost, no subscription needed.</p>
+      <input id="sb-url" type="text" placeholder="https://webhook.site/your-uuid">
+      <div class="btn-row">
+        <button class="btn btn-fill" id="sb-fire" onclick="fireSandbox()">Fire webhook ↗</button>
+        <button class="btn btn-out" id="sb-fire5" onclick="fireSandbox(5)">Fire 5×</button>
+      </div>
+      <div class="sb-results" id="sb-results"></div>
+    </div>
+  </div>
+
+  <!-- ═══ ACTIVITY TAB ═══ -->
+  <div class="tab-panel" id="tab-activity">
+    <div class="act-header">
+      <h3><span class="dot" id="ldot"></span> Live activity</h3>
+      <span style="font:400 11px 'JetBrains Mono';color:var(--g4)" id="fts">—</span>
+    </div>
+    <table>
+      <thead><tr><th>Time</th><th>Sub</th><th>Status</th><th>Latency</th><th>Tx</th></tr></thead>
+      <tbody id="feed-body"><tr><td class="empty" colspan="5">No deliveries yet.</td></tr></tbody>
+    </table>
+    <div class="recipelink">Need a webhook? <a href="https://webhook.site" target="_blank">webhook.site</a></div>
+  </div>
+</div>
+
+<script>
+// ── subscriptions demo data ──
+const subsData=[
+  {id:4,type:'transfer',watching:'Transfer ≥ 100,000 TSLA',webhook:'webhook.site/xxx…',balance:0.08,sent:8,tag:'defi',active:true},
+  {id:2,type:'swap',watching:'Swap events ≥ 50,000',webhook:'my-bot.fly.dev…',balance:0.12,sent:4,tag:'agentic',active:true},
+  {id:7,type:'liquidation',watching:'Liquidation from 0xPool',webhook:'risk.fly.dev…',balance:0.03,sent:2,tag:'risk',active:true},
+  {id:1,type:'transfer',watching:'Transfer ≥ 500,000 AAPL',webhook:'discord.webhook…',balance:0.02,sent:12,tag:'dao',active:true},
+];
+
+function renderSubs(filter='all',search=''){
+  let rows=subsData;
+  if(filter==='active')rows=rows.filter(s=>s.active);
+  if(filter==='low')rows=rows.filter(s=>s.active&&s.balance<0.05);
+  if(filter==='depleted')rows=rows.filter(s=>!s.active);
+  if(search)rows=rows.filter(s=>s.watching.toLowerCase().includes(search.toLowerCase())||s.webhook.toLowerCase().includes(search.toLowerCase()));
+  document.getElementById('subs-body').innerHTML=rows.map(s=>`
+    <tr>
+      <td class="mono">#${s.id}</td>
+      <td><span class="tag ${s.tag}">${s.tag.toUpperCase()}</span> ${s.watching}</td>
+      <td class="mono">${s.webhook}</td>
+      <td><span class="bal${s.balance<0.05?' low':''}">${s.balance.toFixed(2)} ETH</span></td>
+      <td>${s.sent}</td>
+      <td>
+        <button class="action-btn" onclick="alert('Resend last delivery for sub #${s.id} (no on-chain cost)')">↻ RESEND</button>
+      </td>
+    </tr>`).join('');
+}
+function filterSubs(f){document.querySelectorAll('.sub-bar .filter').forEach(b=>b.classList.remove('sel'));event.target.classList.add('sel');renderSubs(f)}
+function searchSubs(q){renderSubs('all',q)}
+renderSubs();
+
+// ── parser ──
+const T={tsla:"0x322F0929c4625eD5bAd873c95208D54E1c003b2d",aapl:"0xaF3D76f1834A1d425780943C99Ea8A608f8a93f9",nvda:"0xd0601CE157Db5bdC3162BbaC2a2C8aF5320D9EEC",amzn:"0x12f190a9F9d7D37a250758b26824B97CE941bF54",msft:"0xe93237C50D904957Cf27E7B1133b510C669c2e74",googl:"0x2e0847E8910a9732eB3fb1bb4b70a580ADAD4FE3",meta:"0xc0D6457C16Cc70d6790Dd43521C899C87ce02f35",mstr:"0xec262a75e413fAfD0dF80480274532C79D42da09",spy:"0x117cc2133c37B721F49dE2A7a74833232B3B4C0C",qcom:"0x0f17206447090e464C277571124dD2688E48AEA9"};
+function wei(n){return String(BigInt(Math.floor(n))*BigInt(10**18))}
+function tk(t){const l=t.toLowerCase();for(const[k,v]of Object.entries(T))if(l.includes(k))return v;return null}
+function pn(s){const c=s.toLowerCase().replace(/_/g,'').replace(/,/g,'').trim();for(const[sf,m]of Object.entries({k:1e3,m:1e6,b:1e9})){const x=new RegExp(`^([\\d.]+)\\s*${sf}$`).exec(c);if(x)return parseFloat(x[1])*m}const n=Number(c);return isNaN(n)?null:n}
+function de(t){for(const[r,n]of[[/\bswap\b/,'Swap'],[/\bliquidation\b/,'Liquidation'],[/\bdeposit\b/,'Deposit'],[/\bwithdraw(al)?\b/,'Withdrawal'],[/\bmint\b/,'Mint'],[/\bburn\b/,'Burn'],[/\btransfer\b/,'Transfer'],[/\bwhales?\b/,'Transfer']])if(r.test(t.toLowerCase()))return n;return'Transfer'}
+function parse(text){const r=text.trim();if(!r)return null;const tkr=tk(r),ad=(r.match(/0x[a-fA-F0-9]{40}/)||[])[0],ev=de(r);let op=null,am=null;const ov=/(over|above|more than|≥|>=)\s*([\d.]+[kmb]?)/i.exec(r);const un=/(under|below|less than|≤|<=)\s*([\d.]+[kmb]?)/i.exec(r);if(ov){op='gte';am=pn(ov[2])}else if(un){op='lte';am=pn(un[2])}const cs=[{field:'eventName',op:'eq',value:ev}];if(tkr)cs.push({field:'address',op:'eq',value:tkr});const fr=/\b(from|out of|sender)\b/i.test(r);const to=/\b(to|into|recipient)\b/i.test(r);if((fr||to)&&ad)cs.push({field:fr?'from':'to',op:'eq',value:ad.toLowerCase()});else if(ad&&!fr&&!to)cs.push({field:ev==='Transfer'?'to':'from',op:'eq',value:ad.toLowerCase()});if(op&&am!==null)cs.push({field:'value',op,value:wei(am)});const pred=cs.length===1?cs[0]:{and:cs};const tn=tkr?Object.entries(T).find(([,v])=>v===tkr)?.[0].toUpperCase():ad?ad.slice(0,10)+'…':'any token';const dest=fr?'from':(to?'to':(ad?'involving':''));const adsc=op&&am?`≥ ${am.toLocaleString()} ${tn}`:'';const pts=[`Watching ${ev} events`];if(ad)pts.push(`${dest} ${ad.toLowerCase().slice(0,10)}…`);if(adsc)pts.push(adsc);if(tkr&&!adsc)pts.push(`on ${tn}`);return{predicate:pred,description:pts.join(' · ')}};
+
+function ec(event,c){const raw=event[c.field],actual=raw===undefined||raw===null?'undefined':String(raw);if(raw===undefined)return{matched:false,actual};const cn=(a,b)=>{const ba=BigInt(a),bb=BigInt(b);return ba<bb?-1:ba>bb?1:0};switch(c.op){case'eq':return{matched:cn(raw,c.value)===0,actual};case'gte':return{matched:cn(raw,c.value)>=0,actual};case'gt':return{matched:cn(raw,c.value)>0,actual};default:return{matched:false,actual};}}
+function ep(event,p){return p.and?p.and.every(c=>ep(event,c)):p.or?p.or.some(c=>ep(event,c)):ec(event,p).matched}
+
+const SAMPLES=[{eventName:'Transfer',address:T.tsla,from:'0x1111111111111111111111111111111111111111',to:'0x2222222222222222222222222222222222222222',value:wei(150000),blockNumber:1000},{eventName:'Transfer',address:T.tsla,value:wei(5),blockNumber:1001},{eventName:'Transfer',address:T.aapl,value:wei(500000),blockNumber:1002},{eventName:'Swap',address:'0x9999999999999999999999999999999999999999',value:wei(75000),blockNumber:1003}];
+
+const inp=document.getElementById('ai-in'),po=document.getElementById('pred-out'),so=document.getElementById('sum-out'),dg=document.getElementById('dry-grid');
+function demo(t){if(!inp)return;inp.value=t;upd()}
+function upd(){if(!inp)return;const r=parse(inp.value);if(!r){po.textContent='{ "and": [] }';so.textContent='Type a description above.';dg.innerHTML='<div class="empty">No predicate to test.</div>';return}po.textContent=JSON.stringify(r.predicate,null,2);so.textContent=r.description;let h='';for(const ev of SAMPLES){const m=ep(ev,r.predicate);h+=`<div class="dry-row ${m?'match':'nomatch'}"><span class="st">${m?'✓ MATCH':'✗ NO MATCH'}</span><span class="ev">${ev.eventName} · ${ev.address?ev.address.slice(0,10)+'…':'?'} · ${ev.value.slice(0,14)}… · blk ${ev.blockNumber}</span></div>`}dg.innerHTML=h||'<div class="empty">No predicate to test.</div>';document.getElementById('subscribe-hint').textContent=`warden subscribe --ai "${inp.value}" --webhook https://webhook.site/xxx --amount 0.05`;}
+if(inp){inp.addEventListener('input',upd);inp.value='whales over 100k TSLA';upd();}
+function copySubscribeCmd(){if(!inp)return;const cmd="warden subscribe --ai '"+inp.value+"' --webhook https://webhook.site/xxx --amount 0.05";navigator.clipboard.writeText(cmd);const btn=document.querySelector("#tab-build .btn-fill");btn.textContent="✓ Copied!";setTimeout(function(){btn.textContent="📋 Copy CLI Command"},2000)}
+
+function switchTab(id){document.querySelectorAll('.tabs button').forEach(b=>b.classList.remove('active'));document.querySelectorAll('.tab-panel').forEach(c=>c.classList.remove('active'));document.getElementById('tab-'+id).classList.add('active');event.target.classList.add('active')}
+
+async function fireSandbox(count=1){const url=document.getElementById('sb-url').value.trim();if(!url||!url.startsWith('https://')){document.getElementById('sb-results').innerHTML='<div class="fail">Enter a valid https:// URL</div>';return}const btn=document.getElementById('sb-fire'),btn5=document.getElementById('sb-fire5');btn.disabled=true;btn5.disabled=true;const results=document.getElementById('sb-results');results.innerHTML='<div style="color:var(--g4)">Firing...</div>';const out=[];for(let i=0;i<count;i++){const id=(''+Math.random()).slice(2,10);const body=JSON.stringify({subId:'sandbox',deliveryId:id,matchedAt:new Date().toISOString(),event:{note:`Sandbox ${i+1}/${count}`,sample:{from:'0x322F0929c462',to:'0xaF3D76f1834A',value:'1000000000000000000'}}});try{const res=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json','X-Warden-Idempotency-Key':id,'X-Warden-Sub-Id':'sandbox','X-Warden-Signature':'sandbox'},body});out.push({ok:res.ok,status:res.status,ms:0})}catch(e){out.push({ok:false,status:0,ms:0})}}results.innerHTML=out.map(r=>`<div class="${r.ok?'ok':'fail'}">${r.ok?'✓':'✗'} HTTP ${r.status||'err'}</div>`).join('');btn.disabled=false;btn5.disabled=false}
+
+async function feed(){try{const dl=await fetch('/api/deliveries?limit=6').then(r=>r.json());document.getElementById('act-cnt').textContent=dl.length;const body=document.getElementById('feed-body');if(!dl.length){body.innerHTML='<tr><td class="empty" colspan="5">No deliveries yet.</td></tr>';return}document.getElementById('fts').textContent=new Date().toLocaleTimeString();body.innerHTML=dl.map((d,i)=>{const ok=d.status>=200&&d.status<300;return`<tr class="del-row" onclick="toggle('tr-${i}')"><td class="mono">${new Date(d.created_at).toLocaleTimeString()}</td><td>${String(d.sub_id).replace(/^demo-/, '')}</td><td class="${ok?'ok':'bad'}">${d.status??'failed'}</td><td>${d.latency_ms}ms</td><td class="mono">${d.tx_hash?d.tx_hash.slice(0,10)+'…':'—'}</td></tr><tr id="tr-${i}" class="trace-panel"><td colspan="5">${d.trace_json?JSON.parse(d.trace_json).map(t=>`<div class="trace-line ${t.matched?'mok':'mno'}"><span class="tf">${esc(t.field)}</span><span class="to">${t.op}</span><span class="tv">expected: ${tr(esc(t.expected),28)} · actual: ${tr(esc(t.actual),28)}</span></div>`).join(''):'<span style="color:var(--g4)">No trace available.</span>'}</td></tr>`}).join('')}catch(e){}}
+
+function toggle(id){document.querySelectorAll('.trace-panel').forEach(e=>{if(e.id!==id)e.classList.remove('open')});document.getElementById(id).classList.toggle('open')}
+function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML}
+function tr(s,n){return s&&s.length>n?s.slice(0,n)+'…':s||'—'}
+feed();setInterval(feed,5000);
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/ethers@6/dist/ethers.min.js"></script>
+<script>
+// ── Real wallet connect for Robinhood Chain (chain ID 4663 via MetaMask/Rabby) ──
+const RHC_CHAIN = {chainId:'0x1237',chainName:'Robinhood Chain',nativeCurrency:{name:'ETH',symbol:'ETH',decimals:18},rpcUrls:['https://rpc.mainnet.chain.robinhood.com'],blockExplorerUrls:['https://robinhoodchain.blockscout.com']};
+let walletProvider=null,walletAddress=null;
+
+async function connectWallet(){
+  if(!window.ethereum){document.getElementById('wallet-btn').textContent='No wallet';return}
+  try{
+    await window.ethereum.request({method:'wallet_addEthereumChain',params:[RHC_CHAIN]});
+    await window.ethereum.request({method:'wallet_switchEthereumChain',params:[{chainId:RHC_CHAIN.chainId}]});
+    const p=new ethers.BrowserProvider(window.ethereum);
+    await p.send('eth_requestAccounts',[]);
+    const signer=await p.getSigner();
+    walletProvider=p;walletAddress=await signer.getAddress();
+    const bal=await p.getBalance(walletAddress);
+    const btn=document.getElementById('wallet-btn');
+    btn.textContent=walletAddress.slice(0,6)+'…'+walletAddress.slice(-4)+' · '+Number(ethers.formatEther(bal)).toFixed(3)+' ETH';
+    btn.onclick=disconnectWallet;btn.style.background='var(--g)';btn.style.color='var(--bk)';
+    window.ethereum.on('accountsChanged',()=>{walletAddress=null;disconnectWallet()});
+    window.ethereum.on('chainChanged',()=>{walletAddress=null;disconnectWallet()});
+  }catch(e){document.getElementById('wallet-btn').textContent='Connect wallet'}}
+
+function disconnectWallet(){
+  walletProvider=null;walletAddress=null;
+  const btn=document.getElementById('wallet-btn');
+  btn.textContent='Connect wallet';btn.onclick=connectWallet;btn.style.background='var(--bk)';btn.style.color='var(--w)';
+}
+</script>
+</body>
+</html>

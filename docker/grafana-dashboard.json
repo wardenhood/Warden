@@ -1,0 +1,99 @@
+{
+  "title": "Warden",
+  "uid": "warden",
+  "timezone": "browser",
+  "editable": true,
+  "panels": [
+    {
+      "title": "Deliveries (Total)",
+      "type": "stat",
+      "gridPos": { "x": 0, "y": 0, "w": 4, "h": 4 },
+      "targets": [{ "expr": "warden_deliveries_total", "legendFormat": "total" }],
+      "fieldConfig": {
+        "defaults": { "color": { "mode": "palette-classic" }, "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }] } }
+      }
+    },
+    {
+      "title": "Success Rate",
+      "type": "stat",
+      "gridPos": { "x": 4, "y": 0, "w": 4, "h": 4 },
+      "targets": [{ "expr": "warden_deliveries_ok / warden_deliveries_total * 100", "legendFormat": "%" }],
+      "fieldConfig": {
+        "defaults": { "unit": "percent", "color": { "mode": "thresholds" }, "thresholds": { "mode": "absolute", "steps": [{ "color": "red", "value": null }, { "color": "yellow", "value": 95 }, { "color": "green", "value": 99 }] } }
+      }
+    },
+    {
+      "title": "Active Subscriptions",
+      "type": "stat",
+      "gridPos": { "x": 8, "y": 0, "w": 4, "h": 4 },
+      "targets": [{ "expr": "warden_active_subscriptions", "legendFormat": "active" }],
+      "fieldConfig": {
+        "defaults": { "color": { "mode": "palette-classic" } }
+      }
+    },
+    {
+      "title": "p50 Latency",
+      "type": "stat",
+      "gridPos": { "x": 12, "y": 0, "w": 4, "h": 4 },
+      "targets": [{ "expr": "warden_latency_p50_ms", "legendFormat": "ms" }],
+      "fieldConfig": {
+        "defaults": { "unit": "ms", "color": { "mode": "thresholds" }, "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }, { "color": "yellow", "value": 500 }, { "color": "red", "value": 1000 }] } }
+      }
+    },
+    {
+      "title": "p95 Latency",
+      "type": "stat",
+      "gridPos": { "x": 16, "y": 0, "w": 4, "h": 4 },
+      "targets": [{ "expr": "warden_latency_p95_ms", "legendFormat": "ms" }],
+      "fieldConfig": {
+        "defaults": { "unit": "ms", "color": { "mode": "thresholds" }, "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }, { "color": "yellow", "value": 1000 }, { "color": "red", "value": 2000 }] } }
+      }
+    },
+    {
+      "title": "p99 Latency",
+      "type": "stat",
+      "gridPos": { "x": 20, "y": 0, "w": 4, "h": 4 },
+      "targets": [{ "expr": "warden_latency_p99_ms", "legendFormat": "ms" }],
+      "fieldConfig": {
+        "defaults": { "unit": "ms", "color": { "mode": "thresholds" }, "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }, { "color": "yellow", "value": 2000 }, { "color": "red", "value": 5000 }] } }
+      }
+    },
+    {
+      "title": "Throughput (deliveries/min)",
+      "type": "graph",
+      "gridPos": { "x": 0, "y": 4, "w": 12, "h": 8 },
+      "targets": [{ "expr": "rate(warden_deliveries_total[1m]) * 60", "legendFormat": "deliveries/min" }]
+    },
+    {
+      "title": "OK vs Failed",
+      "type": "graph",
+      "gridPos": { "x": 12, "y": 4, "w": 12, "h": 8 },
+      "targets": [
+        { "expr": "rate(warden_deliveries_ok[1m]) * 60", "legendFormat": "ok/min" },
+        { "expr": "rate(warden_deliveries_failed[1m]) * 60", "legendFormat": "failed/min" }
+      ]
+    },
+    {
+      "title": "Latency (p50 · p95 · p99 · mean)",
+      "type": "graph",
+      "gridPos": { "x": 0, "y": 12, "w": 16, "h": 8 },
+      "targets": [
+        { "expr": "warden_latency_mean_ms", "legendFormat": "mean" },
+        { "expr": "warden_latency_p50_ms", "legendFormat": "p50" },
+        { "expr": "warden_latency_p95_ms", "legendFormat": "p95" },
+        { "expr": "warden_latency_p99_ms", "legendFormat": "p99" }
+      ]
+    },
+    {
+      "title": "Uptime",
+      "type": "stat",
+      "gridPos": { "x": 16, "y": 12, "w": 8, "h": 8 },
+      "targets": [{ "expr": "warden_uptime_seconds", "legendFormat": "s" }],
+      "fieldConfig": {
+        "defaults": { "unit": "s", "color": { "mode": "palette-classic" } }
+      }
+    }
+  ],
+  "refresh": "10s",
+  "schemaVersion": 38
+}
